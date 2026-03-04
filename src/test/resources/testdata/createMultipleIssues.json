@@ -1,0 +1,23 @@
+[
+  {
+    "fields": {
+      "project": { "key": "SCRUM" },
+      "summary": "Data Driven Issue 1",
+      "issuetype": { "name": "Task" }
+    }
+  },
+  {
+    "fields": {
+      "project": { "key": "SCRUM" },
+      "summary": "Data Driven Issue 2",
+      "issuetype": { "name": "Task" }
+    }
+  },
+  {
+    "fields": {
+      "project": { "key": "SCRUM" },
+      "summary": "Data Driven Issue 3",
+      "issuetype": { "name": "Task" }
+    }
+  }
+]

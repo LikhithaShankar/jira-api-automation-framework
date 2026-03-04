@@ -1,0 +1,17 @@
+{
+  "body": {
+    "type": "doc",
+    "version": 1,
+    "content": [
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "text": "Comment added from JSON file-1",
+            "type": "text"
+          }
+        ]
+      }
+    ]
+  }
+}

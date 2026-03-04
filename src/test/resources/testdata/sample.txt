@@ -1,0 +1,5 @@
+Jira Attachment Automation Test File
+-------------------------------------
+This file is uploaded using RestAssured.
+Author: Likhitha
+Purpose: API Automation Testing

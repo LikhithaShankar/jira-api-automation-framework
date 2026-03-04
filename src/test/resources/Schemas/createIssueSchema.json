@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Create Issue Response Schema",
+  "type": "object",
+  "required": ["id", "key", "self"],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "key": {
+      "type": "string",
+      "pattern": "^[A-Z]+-\\d+$"
+    },
+    "self": {
+      "type": "string",
+      "format": "uri"
+    }
+  },
+  "additionalProperties": false
+}
