@@ -110,8 +110,6 @@ You can extend this framework by:
 - Adding new feature files under `/features`  
 - Adding new step definitions under `/stepdefinitions`  
 - Creating new request/response POJOs under `/pojo`  
-- Adding reusable methods inside `utils`  
-
 ---
 
 ## 🧑‍💻 Author
