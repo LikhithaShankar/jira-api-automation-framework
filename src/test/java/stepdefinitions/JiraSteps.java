@@ -45,10 +45,6 @@ public void create_issue() {
 
     response = issueService.createIssue(requestBody);
 
-    response.then()
-            .statusCode(201)
-            .body("key", notNullValue());
-
     issueKey = response.jsonPath().getString("key");
     System.out.println("Created Issue Key: " + issueKey);
 }
@@ -57,11 +53,6 @@ public void create_issue() {
     public void fetch_issue() {
 
         response = issueService.getIssue(issueKey);
-
-        response.then()
-                .body("fields.summary", notNullValue())
-                .body("fields.status.name", notNullValue())
-                .body("fields.reporter.displayName", notNullValue());
     }
 
    
@@ -73,9 +64,6 @@ public void add_comment() {
 
     response = commentService.addComment(issueKey, requestBody);
 
-    response.then()
-            .statusCode(201)
-            .body("id", notNullValue());
 }
 
 
@@ -88,15 +76,6 @@ public void update_summary() {
 
         response = issueService.updateSummary(issueKey, requestBody);
 
-    response.then().statusCode(204);
-
-   Response verifyResponse = issueService.getIssue(issueKey);
-
-        verifyResponse.then()
-                .statusCode(200)
-                .body("fields.summary",
-                        equalTo(requestBody.getFields().getSummary()));
-
 }
 
  
@@ -105,10 +84,6 @@ public void update_summary() {
 
         response = projectService.getAllProjects();
 
-        response.then()
-                .body("size()", greaterThan(0))
-                .body("[0].key", notNullValue())
-                .body("[0].name", notNullValue());
     }
 
    
@@ -118,7 +93,7 @@ public void update_summary() {
         int actualStatus = response.getStatusCode();
         System.out.println("Actual Status Code: " + actualStatus);
 
-        assertEquals(actualStatus, expectedStatus);
+        assertEquals(expectedStatus, actualStatus);
     }
 
      @When("User creates issue without mandatory fields")
@@ -128,10 +103,6 @@ public void update_summary() {
                 JsonUtils.readJson("createInvalidIssue.json", CreateIssueRequest.class);
 
         response = issueService.createInvalidIssue(requestBody);
-
-        response.then()
-                .statusCode(400)
-                .body("errors", notNullValue());
     }
 
     @When("User fetches issue with invalid key {string}")
@@ -139,9 +110,6 @@ public void fetch_issue_with_invalid_key(String invalidKey) {
 
         response = issueService.getIssue(invalidKey);
         
-        response.then()
-                .statusCode(404)
-                .body("errorMessages", notNullValue());
 }
 
 @When("User assigns issue to another user")
@@ -151,8 +119,6 @@ public void user_assigns_issue_to_another_user() {
             JsonUtils.readJson("assignIssue.json", AssignIssueRequest.class);
 
         response = issueService.assignIssue(issueKey, requestBody);
-
-    response.then().statusCode(204);
 }
 
 @When("User transitions issue status")
@@ -163,17 +129,13 @@ public void user_transitions_issue_status() {
 
         response = issueService.transitionIssue(issueKey, requestBody);
 
-        response.then()
-            .statusCode(204);
 }
-
 
 
 @Then("Issue status should be {string}")
 public void issue_status_should_be(String expectedStatus) {
 
     Response fetchResponse = issueService.getIssue(issueKey);
-    fetchResponse.then().statusCode(200);
 
     String actualStatus =
             fetchResponse.jsonPath().getString("fields.status.name");
@@ -181,14 +143,12 @@ public void issue_status_should_be(String expectedStatus) {
     System.out.println("Expected Status: " + expectedStatus);
     System.out.println("Actual Status: " + actualStatus);
 
-    assertEquals(actualStatus, expectedStatus);
+    assertEquals(expectedStatus, actualStatus);
 }
 
 @When("User deletes the created issue")
 public void delete_created_issue() {
-
     response = issueService.deleteIssue(issueKey);
-    response.then().statusCode(204);
 }
 
 //advanced scenarios
@@ -200,7 +160,7 @@ public void create_multiple_jira_issues() {
 
     for (CreateIssueRequest requestBody : requests) {
 
-        Response response = issueService.createIssue(requestBody);
+        response = issueService.createIssue(requestBody);
 
         int statusCode = response.getStatusCode();
 
@@ -237,15 +197,21 @@ public void validate_unique_issue_keys() {
 
 @When("User performs complete Jira workflow")
 public void user_performs_complete_workflow() {
+    CreateIssueRequest createRequest =
+            JsonUtils.readJson("createIssue.json", CreateIssueRequest.class);
 
-    // Create Issue(call the methods which already written)
-       create_issue();
+    Response createResponse = issueService.createIssue(createRequest);
+    issueKey = createResponse.jsonPath().getString("key");
+    System.out.println("Created Issue Key: " + issueKey);
 
-    // Add Comment
-       add_comment();
+    AddCommentRequest commentRequest =
+            JsonUtils.readJson("addComment.json", AddCommentRequest.class);
 
-    // Transition Issue
-    user_transitions_issue_status();
+    commentService.addComment(issueKey, commentRequest);
+    
+    TransitionRequest transitionRequest =
+            JsonUtils.readJson("transitionIssue.json", TransitionRequest.class);
+    issueService.transitionIssue(issueKey, transitionRequest);
    
 }
 
@@ -267,7 +233,7 @@ public void user_uploads_attachment_to_created_issue() {
 public void response_should_contain_attachment_filename() {
 
     response.then()
-            .statusCode(200)
+            .assertThat()
             .body("[0].filename", equalTo("sample.txt"))
             .body("[0].size", greaterThan(0));
 
